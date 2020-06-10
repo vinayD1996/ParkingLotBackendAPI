@@ -6,6 +6,7 @@ import lombok.ToString;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -15,12 +16,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table
 @Component
-public class User {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "userId")
-    private Long parkingId;
+    private Long userId;
 
     private String firstName;
     private String lastName;

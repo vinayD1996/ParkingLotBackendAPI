@@ -1,16 +1,16 @@
 package com.bridgelabz.parkinglotbackendapi.user.service;
 
+import com.bridgelabz.parkinglotbackendapi.exception.UserException;
 import com.bridgelabz.parkinglotbackendapi.response.Response;
 import com.bridgelabz.parkinglotbackendapi.response.ResponseToken;
 import com.bridgelabz.parkinglotbackendapi.user.dto.LoginDto;
 import com.bridgelabz.parkinglotbackendapi.user.dto.UserDto;
-import org.springframework.stereotype.Service;
 
-@Service
+
 public interface IUserService {
-    Response register(UserDto userDto);
+    Response register(UserDto userDto) throws UserException;
 
-    ResponseToken login(LoginDto loginDto);
+    ResponseToken login(LoginDto loginDto) throws UserException;
 
-    Response validateEmailId(String token);
+    Response validateEmailId(String token) throws UserException;
 }

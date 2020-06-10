@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestBody("/user")
+@RequestMapping("/parkinglot")
 @CrossOrigin(allowedHeaders = "*",origins = "*")
 public class UserController {
 
@@ -21,20 +21,19 @@ public class UserController {
     private IUserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<Response> register(@RequestBody UserDto userDto) {
+    public ResponseEntity<Response> register(@RequestBody UserDto userDto) throws UserException {
         Response response = userService.register(userDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseToken> Login(@RequestBody LoginDto loginDto) {
-        System.out.println("in login controller");
+    public ResponseEntity<ResponseToken> Login(@RequestBody LoginDto loginDto) throws UserException {
         ResponseToken response = userService.login(loginDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{token}/valid")
-    public ResponseEntity<Response> emailValidation(@PathVariable String token) {
+    public ResponseEntity<Response> emailValidation(@PathVariable String token) throws UserException {
         Response response = userService.validateEmailId(token);
         return new ResponseEntity<Response>(response, HttpStatus.OK);
     }

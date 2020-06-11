@@ -3,7 +3,6 @@ package com.bridgelabz.parkinglotbackendapi.user.service;
 
 import com.bridgelabz.parkinglotbackendapi.exception.UserException;
 import com.bridgelabz.parkinglotbackendapi.response.Response;
-import com.bridgelabz.parkinglotbackendapi.response.ResponseToken;
 import com.bridgelabz.parkinglotbackendapi.user.dto.LoginDto;
 import com.bridgelabz.parkinglotbackendapi.user.dto.UserDto;
 import com.bridgelabz.parkinglotbackendapi.user.model.User;
@@ -54,8 +53,8 @@ public class IUserServiceImpl  implements  IUserService{
         String emailid = userDto.getEmailId();
 
         User user = modelMapper.map(userDto, User.class);
-        Optional<User> useralreadyPresent = userRepository.findByEmailId(user.getEmailId());
-        if (useralreadyPresent.isPresent()) {
+        User useralreadyPresent = userRepository.findByEmailId(user.getEmailId());
+        if (useralreadyPresent != null) {
             throw new UserException(UserException.exceptionType.USER_ALREADY_EXIST);
         }
         String password =  bCryptPasswordEncoder.encode(userDto.getPassword());
@@ -73,54 +72,37 @@ public class IUserServiceImpl  implements  IUserService{
     }
 
     @Override
-    public ResponseToken login(LoginDto loginDto) throws UserException {
+    public Response login(LoginDto loginDto) throws UserException {
 
 
-        Optional<User> user = userRepository.findByEmailId(loginDto.getEmailId());
-        ResponseToken responseToken = new ResponseToken();
-        if (user.isPresent()) {
-            System.out.println(loginDto.getPassword());
-            return authentication(user, loginDto.getPassword());
-
+        User presentUser = checkEmailId(loginDto.getEmailId());
+        if(!presentUser.isVerify()){
+            throw new UserException(UserException.exceptionType.INVALID_EMAIL_ID);
         }
-        return responseToken;
+        boolean status = bCryptPasswordEncoder.matches(loginDto.getPassword(), presentUser.getPassword());
+        if (status) {
+            String token = jwtTokenUtility.createToken(presentUser.getUserId());
+            return new Response("login Successfully", 200);
+        } else
+            return new Response("Password Incorrect : Unauthorized Access", 401);
     }
 
-    private ResponseToken authentication(Optional<User> user, String password) throws UserException {
-
-        ResponseToken responseToken = new ResponseToken();
-        if (user.get().isVerify()) {
-            boolean status = bCryptPasswordEncoder.matches(password, user.get().getPassword());
-
-            if (status == true) {
-                String token = jwtTokenUtility.createToken(user.get().getUserId());
-                responseToken.setToken(token);
-                responseToken.setStatusCode(200);
-                responseToken.setStatusMessage("user.login");
-                responseToken.setEmailId(user.get().getEmailId());
-                responseToken.setFirstName(user.get().getFirstName());
-                responseToken.setLastName(user.get().getLastName());
-                System.out.println(response);
-                return responseToken;
-            }
-
-            throw new UserException(UserException.exceptionType.INVALID_PASSWORD);
-        }
-
-        throw new UserException(UserException.exceptionType.INVALID_EMAIL_ID);
+    private User checkEmailId(String emailId) throws UserException {
+        User userRepositoryByEmailId = userRepository.findByEmailId(emailId);
+        if (userRepositoryByEmailId == null)
+            throw new UserException(UserException.exceptionType.INVALID_EMAIL_ID);
+        return userRepositoryByEmailId;
     }
 
 
     @Override
     public Response validateEmailId(String token) throws UserException {
 
-        Long id = jwtTokenUtility.decodeToken(token);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserException(UserException.exceptionType.USER_NOT_FOUND));
+//
+        Long user_Id = jwtTokenUtility.decodeToken(token);
+        User user = userRepository.findByUserId(user_Id);
         user.setVerify(true);
         userRepository.save(user);
-        response = ResponseHelper.statusResponse(200, "Successfully verified");
-        return response;
+        return new Response("Email Validated Successfully", 200);
     }
-
 }

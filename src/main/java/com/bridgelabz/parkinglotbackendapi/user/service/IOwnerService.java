@@ -4,7 +4,8 @@ import com.bridgelabz.parkinglotbackendapi.exception.UserException;
 import com.bridgelabz.parkinglotbackendapi.response.Response;
 import com.bridgelabz.parkinglotbackendapi.user.dto.LoginDto;
 import com.bridgelabz.parkinglotbackendapi.user.dto.OwnerDto;
-import com.bridgelabz.parkinglotbackendapi.user.dto.UserDto;
+import com.bridgelabz.parkinglotbackendapi.user.dto.ParkingLotDto;
+
 
 public interface IOwnerService {
 
@@ -14,5 +15,5 @@ public interface IOwnerService {
 
     Response ownerValidateEmailId(String token);
 
-    Response isParkingLotCreate(Integer parkingLotCapacity);
+    Response createParkingLot(ParkingLotDto parkingLotDto) throws UserException;
 }

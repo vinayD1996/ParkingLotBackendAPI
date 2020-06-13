@@ -2,7 +2,6 @@ package com.bridgelabz.parkinglotbackendapi.user.controller;
 
 import com.bridgelabz.parkinglotbackendapi.exception.UserException;
 import com.bridgelabz.parkinglotbackendapi.response.Response;
-import com.bridgelabz.parkinglotbackendapi.response.ResponseToken;
 import com.bridgelabz.parkinglotbackendapi.user.dto.LoginDto;
 import com.bridgelabz.parkinglotbackendapi.user.dto.UserDto;
 import com.bridgelabz.parkinglotbackendapi.user.service.IUserService;

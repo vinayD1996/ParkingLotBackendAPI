@@ -38,7 +38,7 @@ public class RegistrationMailService {
 
     public void sendNotification(Owner owner) throws MailException{
 
-        SimpleMailMessage mailMessage=new SimpleMailMessage();
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(owner.getEmailId());
         mailMessage.setFrom("gangishettyvinay@gmail.com");
         mailMessage.setSubject("Thank you For Registering With Us : " + owner.getFirstName()+owner.getLastName());

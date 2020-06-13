@@ -27,9 +27,9 @@ public class User  {
     private String lastName;
     private String emailId;
     private String password;
-    private String mobileNum;
+    private String mobileNumber;
     private boolean isVerify;
     private String typeOfActor;
-    private LocalDateTime registerDate = LocalDateTime.now();
+    private LocalDateTime registeredDateAndTime = LocalDateTime.now();
 
 }

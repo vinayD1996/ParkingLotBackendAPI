@@ -1,12 +1,15 @@
 package com.bridgelabz.parkinglotbackendapi.user.repository;
 
 import com.bridgelabz.parkinglotbackendapi.user.model.Owner;
+import com.bridgelabz.parkinglotbackendapi.user.model.ParkingLotSystem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface OwnerRepository extends JpaRepository<Owner,Long> {
+import java.util.List;
 
-    Owner findByEmailId(String emailId);
-    Owner findByOwnerId(Long owner_id);
+@Repository
+public interface ParkingLotSystemRepository extends JpaRepository<ParkingLotSystem,Long> {
+
+    List<ParkingLotSystem> findAllByOwner(Owner owner);
+
 }

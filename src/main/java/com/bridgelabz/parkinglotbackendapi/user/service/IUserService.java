@@ -5,9 +5,6 @@ import com.bridgelabz.parkinglotbackendapi.response.Response;
 import com.bridgelabz.parkinglotbackendapi.user.dto.LoginDto;
 import com.bridgelabz.parkinglotbackendapi.user.dto.UserDto;
 
-
-
-
 public interface IUserService {
     Response register(UserDto userDto) throws UserException;
 

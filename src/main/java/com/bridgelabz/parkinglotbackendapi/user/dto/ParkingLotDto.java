@@ -12,4 +12,6 @@ public class ParkingLotDto {
     private int numberOfLotSystems,numberOfLots;
 
     private int[] numberOfSlots;
+
+    private String[] attendantName;
 }

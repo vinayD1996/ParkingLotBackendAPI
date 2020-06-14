@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtTokenUtility {
 
-    private static final String TOKEN_SECRET ="sd5745FAHFW" ;
+    private static final String SECRET_KEY ="sd5745FAHFW" ;
 
     public String createToken(Long id) {
         try {
             // to set algorithm
-            Algorithm algorithm = Algorithm.HMAC256(TOKEN_SECRET);
+            Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             // payload
             String token = JWT.create().withClaim("userId", id).sign(algorithm);
             return token;
@@ -36,7 +36,7 @@ public class JwtTokenUtility {
         // for verification algorithm
         Verification verification = null;
         try {
-            verification = JWT.require(Algorithm.HMAC256(TOKEN_SECRET));
+            verification = JWT.require(Algorithm.HMAC256(SECRET_KEY));
         } catch (IllegalArgumentException e) {
 
             e.printStackTrace();

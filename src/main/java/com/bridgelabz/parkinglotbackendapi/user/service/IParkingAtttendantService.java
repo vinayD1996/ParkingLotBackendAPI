@@ -6,4 +6,6 @@ import com.bridgelabz.parkinglotbackendapi.user.dto.VehicleDto;
 public interface IParkingAtttendantService {
 
     Response parkVehicle(VehicleDto vehicleDto);
+
+    Response unParkVehicle(String vehiclePlateNumber);
 }

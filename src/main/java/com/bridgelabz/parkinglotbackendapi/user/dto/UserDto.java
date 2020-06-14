@@ -12,15 +12,12 @@ import javax.validation.constraints.Pattern;
 @ToString
 public class UserDto {
 
-    private String firstName;
-    private String lastName;
+    private String firstName,lastName,mobileNumber;
 
-    @Pattern(regexp = ("^[a-zA-Z]+([.+-]{0,}[a-zA-Z0-9]{3})*@([a-zA-Z0-9]+)([.]?[a-z]{2,})([.]?[a-z]{2,})?$"))
+    @Pattern(regexp = ("^[a-zA-Z]+([.+-]*[a-zA-Z0-9]{3})*@([a-zA-Z0-9]+)([.]?[a-z]{2,})([.]?[a-z]{2,})?$"))
     private String emailId;
-    @Pattern(regexp =  ("([a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-])"))
+    @Pattern(regexp =  ("[A-Z]+[a-zA-Z]{7,}+[0-9]+[ .!@#$%&*()?/{}:']+"))
     private String password;
 
-
-    private String mobileNumber;
     private String typeOfActor;
 }

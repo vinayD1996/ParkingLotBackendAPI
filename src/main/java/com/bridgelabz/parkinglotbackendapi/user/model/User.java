@@ -1,6 +1,7 @@
 package com.bridgelabz.parkinglotbackendapi.user.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table
 @Component
+@NoArgsConstructor
 public class User  {
 
     @Id
@@ -23,11 +25,8 @@ public class User  {
     @Column(name = "userId")
     private Long userId;
 
-    private String firstName;
-    private String lastName;
-    private String emailId;
-    private String password;
-    private String mobileNumber;
+    private String firstName,lastName,emailId;
+    private String password,mobileNumber;
     private boolean isVerify;
     private String typeOfActor;
     private LocalDateTime registeredDateAndTime = LocalDateTime.now();

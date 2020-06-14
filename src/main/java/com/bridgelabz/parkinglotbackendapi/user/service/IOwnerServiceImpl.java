@@ -30,7 +30,7 @@ public class IOwnerServiceImpl implements  IOwnerService {
     private ModelMapper modelMapper;
 
     @Autowired
-     private OwnerJwtTokenUtility ownerJwtTokenUtility;
+    private OwnerJwtTokenUtility ownerJwtTokenUtility;
 
     @Autowired
     private OwnerRepository ownerRepository;
@@ -49,9 +49,6 @@ public class IOwnerServiceImpl implements  IOwnerService {
     @Autowired
     private RegistrationMailService registrationMailService;
 
-
-    @Autowired
-    private Response response;
 
     @Override
     public Response ownerRegister(OwnerDto ownerDto) throws UserException {
@@ -89,11 +86,10 @@ public class IOwnerServiceImpl implements  IOwnerService {
             String token = ownerJwtTokenUtility.createToken(isOwnerPresent.getOwnerId());
             return new Response("login Successfully", 200);
         } else
-            return new Response("Password Incorrect : Unauthorized Access", 401);
+            return new Response("Incorrect Password", 401);
     }
 
     private Owner checkEmailId(String emailId) throws UserException {
-
         Owner ownerEmailId = ownerRepository.findByEmailId(emailId);
         if (ownerEmailId == null)
             throw new UserException(UserException.exceptionType.INVALID_EMAIL_ID);
@@ -102,7 +98,6 @@ public class IOwnerServiceImpl implements  IOwnerService {
 
     @Override
     public Response ownerValidateEmailId(String token) {
-
         Long owner_id = ownerJwtTokenUtility.decodeToken(token);
         Owner owner = ownerRepository.findByOwnerId(owner_id);
         owner.setVerify(true);
@@ -115,7 +110,6 @@ public class IOwnerServiceImpl implements  IOwnerService {
 
         Owner owner = ownerRepository.findByEmailId(parkingLotDto.getLoginDto().getEmailId());
         if (ownerLogin(parkingLotDto.getLoginDto()).getStatusCode() == 200) {
-
             for (int i = 0; i < parkingLotDto.getNumberOfLotSystems(); i++) {
                 ParkingLotSystem parkingLotSystem = new ParkingLotSystem(i);
                 parkingLotSystem.setNumberOfLots(parkingLotDto.getNumberOfLots());
@@ -133,19 +127,18 @@ public class IOwnerServiceImpl implements  IOwnerService {
 
     private void createLot(ParkingLotDto parkingLotDto, Owner owner, ParkingLotSystem parkingLotSystem) {
 
-         int j = 1;
-         for (int i = 0; i < parkingLotDto.getNumberOfLots(); i++) {
-             ParkingLot parkingLot = new ParkingLot(j);
-             parkingLot.setVacant(true);
-             parkingLot.setNumberOfSlots(parkingLotDto.getNumberOfSlots()[i]);
-             parkingLot.setAvailableSlots(parkingLotDto.getNumberOfSlots()[i]);
-             parkingLotSystem.addParkingLot(parkingLot);
-             parkingLot.setParkingLotSystem(parkingLotSystem);
-             parkingLot.setOwner(owner);
-             parkingLotRepository.save(parkingLot);
-             j++;
-         }
-
+        int j = 1;
+        for (int i = 0; i < parkingLotDto.getNumberOfLots(); i++) {
+            ParkingLot parkingLot = new ParkingLot(j);
+            parkingLot.setVacant(true);
+            parkingLot.setNumberOfSlots(parkingLotDto.getNumberOfSlots()[i]);
+            parkingLot.setAttendantName(parkingLotDto.getAttendantName()[i]);
+            parkingLot.setAvailableSlots(parkingLotDto.getNumberOfSlots()[i]);
+            parkingLotSystem.addParkingLot(parkingLot);
+            parkingLot.setParkingLotSystem(parkingLotSystem);
+            parkingLot.setOwner(owner);
+            parkingLotRepository.save(parkingLot);
+            j++;
+        }
     }
-
 }

@@ -28,13 +28,13 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Response> Login(@RequestBody LoginDto loginDto) throws UserException {
         Response response = userService.login(loginDto);
-        return new ResponseEntity<Response>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{token}")
     public ResponseEntity<Response> emailValidation(@PathVariable String token) throws UserException {
         Response response = userService.validateEmailId(token);
-        return new ResponseEntity<Response>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

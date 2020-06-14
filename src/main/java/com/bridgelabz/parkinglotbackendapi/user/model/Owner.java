@@ -21,11 +21,8 @@ public class Owner {
     @Column(name = "ownerId")
     private Long ownerId;
 
-    private String firstName;
-    private String lastName;
-    private String emailId;
-    private String password;
-    private String  mobileNumber;
+    private String firstName,lastName,emailId;
+    private String password,mobileNumber;
     private int numberOfLotSytems;
     private boolean isVerify;
     private LocalDateTime registeredDateAndTime = LocalDateTime.now();

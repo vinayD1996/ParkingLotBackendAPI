@@ -35,6 +35,25 @@ public class ParkingLot {
     private Owner owner;
 
     public ParkingLot(int lotId) {
+
         this.lotId = lotId;
     }
+
+
+    @OneToMany(mappedBy = "parkingLot")
+    private List<Vehicle> vehicleList = new ArrayList<>();
+
+    public void addVehicle(Vehicle vehicle) {
+
+        this.vehicleList.add(vehicle);
+    }
+
+    public void removeVehicle(Vehicle vehicle) {
+
+        this.vehicleList.remove(vehicle);
+    }
+
+
+
+
 }

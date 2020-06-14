@@ -21,6 +21,12 @@ public class ParkingController {
     @PostMapping("/parkVehicle")
     public ResponseEntity<Response> parkVehicle(@RequestBody VehicleDto vehicleDto) {
         Response response = iParkingAtttendantService.parkVehicle(vehicleDto);
-        return  new ResponseEntity<Response>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/unParkVehicle")
+    public ResponseEntity<Response> unParkVehicle(@RequestParam String vehiclePlateNumber) {
+        Response response = iParkingAtttendantService.unParkVehicle(vehiclePlateNumber);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -5,7 +5,6 @@ import com.bridgelabz.parkinglotbackendapi.exception.UserException;
 import com.bridgelabz.parkinglotbackendapi.response.Response;
 import com.bridgelabz.parkinglotbackendapi.user.dto.LoginDto;
 import com.bridgelabz.parkinglotbackendapi.user.dto.UserDto;
-import com.bridgelabz.parkinglotbackendapi.user.model.Owner;
 import com.bridgelabz.parkinglotbackendapi.user.model.User;
 import com.bridgelabz.parkinglotbackendapi.user.repository.UserRepository;
 import com.bridgelabz.parkinglotbackendapi.utility.JwtTokenUtility;
@@ -34,8 +33,6 @@ public class IUserServiceImpl  implements  IUserService{
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-
 
     @Autowired
     private RegistrationMailService registrationMailService;

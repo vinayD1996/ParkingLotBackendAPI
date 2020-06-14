@@ -33,14 +33,14 @@ public class OwnerController {
     }
 
     @GetMapping(value = "/{token}")
-    public ResponseEntity<Response> ownerEmailValidation(@PathVariable String token) throws UserException {
+    public ResponseEntity<Response> ownerEmailValidation(@PathVariable String token) {
         Response response = iOwnerService.ownerValidateEmailId(token);
-        return new ResponseEntity<Response>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/createParkingLot")
     public ResponseEntity<Response> createParkingLot(@RequestBody ParkingLotDto parkingLotDto) throws UserException {
         Response response = iOwnerService.createParkingLot(parkingLotDto);
-        return  new ResponseEntity<Response>(response,HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

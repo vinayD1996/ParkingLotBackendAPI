@@ -20,7 +20,6 @@ public class ParkingLotSystem {
 
     private int numberOfLots;
 
-
     @ManyToOne
     private Owner owner;
 

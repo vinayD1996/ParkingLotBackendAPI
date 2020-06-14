@@ -21,12 +21,9 @@ public class OwnerJwtTokenUtility {
             // payload
             String token = JWT.create().withClaim("ownerId", id).sign(algorithm);
             return token;
-        } catch (JWTCreationException exception) {
+        } catch (JWTCreationException | IllegalArgumentException exception) {
             exception.printStackTrace();
             // log Token Signing Failed
-        } catch (IllegalArgumentException e) {
-
-            e.printStackTrace();
         }
         return null;
     }

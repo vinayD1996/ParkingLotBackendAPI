@@ -1,23 +1,18 @@
 package com.bridgelabz.parkinglotbackendapi.user.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
-@Setter
-@Getter
-@ToString
+
 @Entity
 @Table
 @Component
 @NoArgsConstructor
+@Data
 public class User  {
 
     @Id

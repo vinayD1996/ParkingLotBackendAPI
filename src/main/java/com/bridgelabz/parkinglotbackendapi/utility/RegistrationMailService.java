@@ -1,5 +1,6 @@
 package com.bridgelabz.parkinglotbackendapi.utility;
 
+import com.bridgelabz.parkinglotbackendapi.user.model.Email;
 import com.bridgelabz.parkinglotbackendapi.user.model.Owner;
 import com.bridgelabz.parkinglotbackendapi.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,20 @@ public class RegistrationMailService {
         this.mailSender = mailSender;
     }
 
+
+    public  void sendNotification(Email email) {
+        SimpleMailMessage simpleMailMessage= new SimpleMailMessage();
+        simpleMailMessage.setTo(email.getEmailTo());
+        simpleMailMessage.setFrom("gangishettyvinay@gmail.com");
+        simpleMailMessage.setSubject(email.getSubject());
+        simpleMailMessage.setText(email.getMessage());
+
+        mailSender.send(simpleMailMessage);
+    }
+
     public void sendNotification(User user) throws MailException{
 
-        SimpleMailMessage mailMessage=new SimpleMailMessage();
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(user.getEmailId());
         mailMessage.setFrom("gangishettyvinay@gmail.com");
         mailMessage.setSubject("Thank you For Registering With Us : " + user.getFirstName()+user.getLastName());
@@ -46,5 +58,6 @@ public class RegistrationMailService {
 
         mailSender.send(mailMessage);
     }
+
 
 }

@@ -13,16 +13,19 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@PropertySource("classpath:message.properties")
 public class IUserServiceImpl  implements  IUserService{
 
     private Logger logger = LoggerFactory.getLogger(IUserServiceImpl.class);
 
-    @Autowired
+     @Autowired
      private ModelMapper modelMapper;
 
     @Autowired
@@ -30,6 +33,9 @@ public class IUserServiceImpl  implements  IUserService{
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -44,7 +50,7 @@ public class IUserServiceImpl  implements  IUserService{
         User user = modelMapper.map(userDto, User.class);
         User userAlreadyPresent = userRepository.findByEmailId(user.getEmailId());
         if (userAlreadyPresent != null) {
-            throw new UserException(UserException.exceptionType.USER_ALREADY_EXIST);
+            throw new UserException(environment.getProperty("status.register.emailExistError"),401);
         }
 
         String enCryptedPassword =  bCryptPasswordEncoder.encode(userDto.getPassword());
@@ -56,7 +62,7 @@ public class IUserServiceImpl  implements  IUserService{
         } catch (MailException e) {
             logger.info("Error Sending Email" + e.getMessage());
         }
-        return new Response("Parking Lot "+user.getTypeOfActor()+" register successfully", 200);
+        return new Response("Parking Lot "+user.getTypeOfActor()+ environment.getProperty("user.register"), 200);
 
     }
 
@@ -65,21 +71,21 @@ public class IUserServiceImpl  implements  IUserService{
 
         User presentUser = checkEmailId(loginDto.getEmailId());
         if(!presentUser.isVerify()){
-            throw new UserException(UserException.exceptionType.INVALID_EMAIL_ID);
+            throw new UserException(environment.getProperty("status.login.invalidInput"),401);
         }
-        boolean status = bCryptPasswordEncoder.matches(loginDto.getPassword(), presentUser.getPassword());
-        if (status) {
+        boolean passwordStatus = bCryptPasswordEncoder.matches(loginDto.getPassword(), presentUser.getPassword());
+        if ( passwordStatus) {
             String token = jwtTokenUtility.createToken(presentUser.getUserId());
-            return new Response("login Successfully", 200);
+            return new Response(environment.getProperty("user.login"), 200);
         } else
-            return new Response("Password Incorrect : Unauthorized Access", 401);
+            return new Response(environment.getProperty("user.login.password"), 401);
     }
 
     private User checkEmailId(String emailId) throws UserException {
-        User userRepositoryByEmailId = userRepository.findByEmailId(emailId);
-        if (userRepositoryByEmailId == null)
-            throw new UserException(UserException.exceptionType.INVALID_EMAIL_ID);
-        return userRepositoryByEmailId;
+        User emailIdFromRepository = userRepository.findByEmailId(emailId);
+        if (emailIdFromRepository == null)
+            throw new UserException(environment.getProperty("user.login.error"),401);
+        return emailIdFromRepository;
     }
 
 
@@ -90,6 +96,6 @@ public class IUserServiceImpl  implements  IUserService{
         User user = userRepository.findByUserId(user_Id);
         user.setVerify(true);
         userRepository.save(user);
-        return new Response("Email Validated Successfully", 200);
+        return new Response(environment.getProperty("user.validation"), 200);
     }
 }

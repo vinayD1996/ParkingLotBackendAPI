@@ -11,9 +11,5 @@ import java.util.List;
 @Repository
 public interface ParkingLotRepository extends JpaRepository<ParkingLot,Long> {
 
-
-
-    ParkingLot findByLotId(long lotId);
-
     ParkingLot findByAttendantName(String attendantName);
 }

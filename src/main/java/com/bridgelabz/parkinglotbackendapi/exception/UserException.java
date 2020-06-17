@@ -5,16 +5,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus
 public class UserException extends  Exception {
 
-    public exceptionType type;
+     private int statusCode;
+    public UserException(String message ,int statusCode) {
 
-    public UserException(exceptionType type ) {
-        this.type = type;
+        super(message);
+        this.statusCode =statusCode;
     }
 
-    public enum exceptionType {
-        USER_NOT_FOUND,
-        INVALID_EMAIL_ID,
-        USER_ALREADY_EXIST,
-        EMAIL_ID_NOT_VERIFIED;
-    }
 }

@@ -22,8 +22,6 @@ public class Vehicle {
 
     private long slotNumber;
 
-//    private long lotNumber;
-
     private String attendantName;
 
     private String vehicleModel,vehicleColor,vehiclePlateNumber;

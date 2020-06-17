@@ -17,11 +17,14 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@PropertySource("classpath:message.properties")
 public class IOwnerServiceImpl implements  IOwnerService {
 
     private Logger logger = LoggerFactory.getLogger(IOwnerServiceImpl.class.getName());
@@ -34,6 +37,9 @@ public class IOwnerServiceImpl implements  IOwnerService {
 
     @Autowired
     private OwnerRepository ownerRepository;
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private ParkingLotSystemRepository parkingLotSystemRepository;
@@ -56,7 +62,7 @@ public class IOwnerServiceImpl implements  IOwnerService {
         Owner owner = modelMapper.map(ownerDto, Owner.class);
         Owner isOwnerPresent = ownerRepository.findByEmailId(owner.getEmailId());
         if (isOwnerPresent != null) {
-            throw new UserException(UserException.exceptionType.USER_ALREADY_EXIST);
+            throw new UserException(environment.getProperty("status.register.emailExistError"),401);
         }
 
         String enCryptedPassword =  bCryptPasswordEncoder.encode(ownerDto.getPassword());
@@ -68,7 +74,7 @@ public class IOwnerServiceImpl implements  IOwnerService {
         } catch (MailException e) {
             logger.info("Error Sending Email" + e.getMessage());
         }
-        return new Response("Parking Lot owner registered successfully", 200);
+        return new Response("Parking Lot owner"+ environment.getProperty("user.register"), 200);
 
     }
 
@@ -78,21 +84,21 @@ public class IOwnerServiceImpl implements  IOwnerService {
 
         Owner isOwnerPresent = checkEmailId(loginDto.getEmailId());
         if(!isOwnerPresent.isVerify()){
-            throw new UserException(UserException.exceptionType.EMAIL_ID_NOT_VERIFIED);
+            throw new UserException(environment.getProperty("status.login.invalidInput"),401);
         }
 
         boolean status = bCryptPasswordEncoder.matches(loginDto.getPassword(), isOwnerPresent.getPassword());
         if (status) {
             String token = ownerJwtTokenUtility.createToken(isOwnerPresent.getOwnerId());
-            return new Response("login Successfully", 200);
+            return new Response(environment.getProperty("user.login"), 200);
         } else
-            return new Response("Incorrect Password", 401);
+            return new Response(environment.getProperty("user.login.password"), 401);
     }
 
     private Owner checkEmailId(String emailId) throws UserException {
         Owner ownerEmailId = ownerRepository.findByEmailId(emailId);
         if (ownerEmailId == null)
-            throw new UserException(UserException.exceptionType.INVALID_EMAIL_ID);
+            throw new UserException(environment.getProperty("user.login.error"),401);
         return ownerEmailId;
     }
 
@@ -102,7 +108,7 @@ public class IOwnerServiceImpl implements  IOwnerService {
         Owner owner = ownerRepository.findByOwnerId(owner_id);
         owner.setVerify(true);
         ownerRepository.save(owner);
-        return new Response("Email Validated Successfully", 200);
+        return new Response(environment.getProperty("user.validation"), 200);
     }
 
     @Override
@@ -120,9 +126,9 @@ public class IOwnerServiceImpl implements  IOwnerService {
             }
             owner.setNumberOfLotSytems(parkingLotSystemRepository.findAllByOwner(owner).size());
             ownerRepository.save(owner);
-            return new Response("ParkingLotSystem created successfully", 201);
+            return new Response(environment.getProperty("status.parkingLot.createdSuccessful"), 201);
         }
-        throw new UserException(UserException.exceptionType.USER_NOT_FOUND);
+        throw new UserException(environment.getProperty("user.login.error"),401);
     }
 
     private void createLot(ParkingLotDto parkingLotDto, Owner owner, ParkingLotSystem parkingLotSystem) {

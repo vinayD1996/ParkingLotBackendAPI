@@ -1,26 +1,14 @@
 package com.bridgelabz.parkinglotbackendapi.response;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.stereotype.Component;
+import lombok.*;
 
-@Component
-@Setter
-@Getter
-@ToString
-@NoArgsConstructor
+
+
+@Data
+@AllArgsConstructor
 public class Response {
 
     private String statusMessage;
     private int statusCode;
-
-
-    public Response(String statusMessage, int statusCode) {
-        this.statusMessage = statusMessage;
-        this.statusCode = statusCode;
-    }
-
 }

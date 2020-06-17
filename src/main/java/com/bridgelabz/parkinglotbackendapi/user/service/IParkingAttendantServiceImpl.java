@@ -1,7 +1,9 @@
 package com.bridgelabz.parkinglotbackendapi.user.service;
 
 import com.bridgelabz.parkinglotbackendapi.response.Response;
+import com.bridgelabz.parkinglotbackendapi.user.RabbitMq.RabbitMqImplementation;
 import com.bridgelabz.parkinglotbackendapi.user.dto.VehicleDto;
+import com.bridgelabz.parkinglotbackendapi.user.model.Email;
 import com.bridgelabz.parkinglotbackendapi.user.model.ParkingLot;
 import com.bridgelabz.parkinglotbackendapi.user.model.Vehicle;
 import com.bridgelabz.parkinglotbackendapi.user.repository.ParkingLotRepository;
@@ -9,6 +11,8 @@ import com.bridgelabz.parkinglotbackendapi.user.repository.ParkingLotSystemRepos
 import com.bridgelabz.parkinglotbackendapi.user.repository.VehicleRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,6 +21,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toCollection;
 
 @Service
+@PropertySource("classpath:message.properties")
 public class IParkingAttendantServiceImpl implements  IParkingAtttendantService {
 
     @Autowired
@@ -26,10 +31,19 @@ public class IParkingAttendantServiceImpl implements  IParkingAtttendantService 
     ParkingLotSystemRepository parkingLotSystemRepository;
 
     @Autowired
+    private Environment environment;
+
+    @Autowired
     ParkingLotRepository parkingLotRepository;
 
     @Autowired
     VehicleRepository vehicleRepository;
+
+    @Autowired
+    private RabbitMqImplementation rabbitMqImplementation;
+
+    @Autowired
+    private Email email;
 
 
     @Override
@@ -37,18 +51,24 @@ public class IParkingAttendantServiceImpl implements  IParkingAtttendantService 
         Vehicle vehicle = modelMapper.map(vehicleDto, Vehicle.class);
         List<ParkingLot> lotsList = parkingLotRepository.findAll();
         ParkingLot parkingLot = getParkingLot(lotsList);
+        vehicle.setParkingLot(parkingLot);
         if (parkingLot.getAvailableSlots() > 0 && checkVehicleAvailable(vehicle.getVehiclePlateNumber())) {
             vehicle.setAttendantName(parkingLot.getAttendantName());
-            vehicle.setParkingLot(parkingLot);
             vehicle.setSlotNumber(parkingLot.getVehicleList().size()+1);
             parkingLot.addVehicle(vehicle);
             parkingLot.setAvailableSlots(parkingLot.getAvailableSlots() - 1);
             vehicleRepository.save(vehicle);
             parkingLotRepository.save(parkingLot);
-            return new Response("Vehicle Parked", 202);
+            return new Response(environment.getProperty("status.parkVehicle.updatedSuccessful"), 202);
         } else if (!checkVehicleAvailable(vehicle.getVehiclePlateNumber()))
-            return new Response("Vehicle already parked", 202);
-        return new Response("All parkingLots are Full ", 202);
+            return new Response(environment.getProperty("status.alreadyParkVehicle.updatedSuccessful"), 202);
+
+           email.setEmailTo(vehicle.getEmailId());
+           email.setSubject("ParkingLot SlotsAvailability Information");
+           email.setMessage("Parking Lot"+vehicle.getParkingLot().getLotId() + "is Full");
+           rabbitMqImplementation.sendMessageToQueue(email);
+           rabbitMqImplementation.send(email);
+        return new Response(environment.getProperty("status.parkVehicle.updateCapacityFull"), 202);
     }
 
     @Override
@@ -60,9 +80,9 @@ public class IParkingAttendantServiceImpl implements  IParkingAtttendantService 
             parkingLot.removeVehicle(byVehicleNumber);
             parkingLotRepository.save(parkingLot);
             vehicleRepository.delete(byVehicleNumber);
-            return new Response("Vehicle unParked Successfully", 202);
+            return new Response(environment.getProperty("status.unParkVehicle.updatedSuccessful"), 202);
         }
-        return new Response("Vehicle not parked here", 404);
+        return new Response(environment.getProperty("status.unParkVehicle.error"), 404);
     }
 
     private boolean checkVehicleAvailable(String vehiclePlateNumber) {
